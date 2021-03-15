@@ -1,4 +1,6 @@
 import socket
+import matplotlib.pyplot as plt
+
 
 '''
     https://gqrx.dk/doc/streaming-audio-over-udp
@@ -18,7 +20,16 @@ UDP_PORT = 7355
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 
-while True:
-    data, addr = sock.recvfrom(1024) # buffer size of 1024 bytes
-    print("Received data: %s" % data)
-    
+#while True:
+data, addr = sock.recvfrom(1024) # buffer size of 1024 bytes
+print("Received data: %s" % data)
+
+t = list(range(len(data)))
+
+print(t)
+data = bytearray(data)
+
+print(data)
+# plotting the data
+plt.plot(t,data) 
+plt.show()

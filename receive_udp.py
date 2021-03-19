@@ -39,9 +39,9 @@ data = b'0'
 data_times = 1024
 
 f = open("radio-capture.dat", "ab")
-#time_end = time.time() + 60 #60*15
-#while time.time() < time_end:
-while data_times >= 0:
+time_end = time.time() + 60 #60*15
+while time.time() < time_end:
+#while data_times >= 0:
     data_temp, addr = sock.recvfrom(1024) # buffer size of 1024 bytes
     data = data + data_temp
     data_times -= 1
@@ -70,7 +70,7 @@ data_16bit.byteswap()
 # Create a new t to match our array of words (shortened to half the size in bytes)
 t = list(range(len(data_16bit)))
 
-#f.write(data_16bit)
+f.write(data_16bit)
 f.close()
 
 print(list(data_16bit))

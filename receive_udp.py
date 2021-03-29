@@ -7,6 +7,7 @@ import numpy as np
 from scipy import fftpack
 import scipy.signal
 import array
+import resample as rs
 
 '''
     https://gqrx.dk/doc/streaming-audio-over-udp
@@ -21,7 +22,6 @@ import array
     NOAA 15 - 137.6200 MHz
     NOAA 18 - 137.9125 MHz
     NOAA 19 - 137.1000 MHz
-
 '''
 def receive_data_UDP():
     # localhost
@@ -38,7 +38,9 @@ def receive_data_UDP():
 
     data_times = 1024
 
-    f = open("radio-capture.dat", "ab")
+    f = open("radio-capture.dat", "rb")
+    
+    '''
     time_end = time.time() + 60*1
     while time.time() < time_end:
     #while data_times >= 0:
@@ -46,7 +48,11 @@ def receive_data_UDP():
         data = data + data_temp
         data_times -= 1
         #print("Received data: %s" % data)
-
+    
+    f.write(data)
+    '''
+    data = f.read()
+    
     # generate t from 1 to len(data)
     t = list(range(len(data)))
 
@@ -66,6 +72,9 @@ def receive_data_UDP():
     data_16bit = array.array('h', data)
     # Because data comes in in reverse order, swap the bytes two by two for each word
     data_16bit.byteswap()
+    
+    #data_16bit = rs.resample(1800000, 4096, data_16bit)
+    #data_16bit = scipy.signal.decimate(data_16bit,10)
 
     # Create a new t to match our array of words (shortened to half the size in bytes)
     t = list(range(len(data_16bit)))
@@ -130,9 +139,5 @@ def receive_data_UDP():
     print("[receive_udp] Data saved to radio-capture.dat, input.png, demod.png, FFT.png")
     
     return data_16bit
-
-
-
-
 
 

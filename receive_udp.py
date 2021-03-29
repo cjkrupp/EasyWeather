@@ -6,6 +6,7 @@ import struct
 import numpy as np
 from scipy import fftpack
 import scipy.signal
+from scipy import signal
 import array
 import resample as rs
 
@@ -73,12 +74,16 @@ def receive_data_UDP():
     # Because data comes in in reverse order, swap the bytes two by two for each word
     data_16bit.byteswap()
     
-    #data_16bit = rs.resample(1800000, 4096, data_16bit)
-    #data_16bit = scipy.signal.decimate(data_16bit,10)
+    #data_16bit = rs.resample(1800000, 20800, data_16bit)
+    
 
     # Create a new t to match our array of words (shortened to half the size in bytes)
     t = list(range(len(data_16bit)))
-
+    
+    #no_samples = round(len(data) * float(4160) / 1800000) 
+    #data_16bit = scipy.signal.resample(data_16bit, no_samples)
+    #data_16bit = signal.resample(data_16bit, 28000)
+    
     #f.write(data_16bit)
     f.close()
 
@@ -103,9 +108,18 @@ def receive_data_UDP():
         return amplitude_envelope
 
     data_hilbert = hilbert(data_16bit)
+    
+    
+    
+    data_hilbert = rs.resample(48000, 4800, data_hilbert)
+    #data_hilbert = signal.resample_poly(data_16bit, 1,10) # 10 looks decent
+    
+    
+    
 
     plt.figure(2)
-    plt.plot(t,data_16bit,t,data_hilbert) 
+    #plt.plot(t,data_16bit,t[:len(data_hilbert)],data_hilbert) 
+    plt.plot(t[:len(data_hilbert)],data_hilbert)
     
     #plt.show()
     #fig = plt.gcf()

@@ -106,19 +106,45 @@ def receive_data_UDP():
         analytic_signal = scipy.signal.hilbert(data)
         amplitude_envelope = np.abs(analytic_signal)
         return amplitude_envelope
-
+    
+    def movingaverage (values, window):
+        weights = np.repeat(1.0, window)/window
+        sma = np.convolve(values, weights, 'valid')
+        return sma
+    
+    #filter_config = scipy.signal.butter(2,1200,btype='lowpass',fs=48000,output='sos')
+    #data_16bit = signal.sosfilt(filter_config,np.asarray(data_16bit))
+    
+    #b, a = signal.iirnotch(2400, 10, 48000)
+    #freq, h = signal.freqz(b, a, fs=48000)
+    #data_16bit = np.convolve(data_16bit,h,'same').real
+    
+    filter_config = scipy.signal.butter(2,2400,btype='lowpass',fs=48000,output='sos')
+    data_16bit = signal.sosfilt(filter_config,np.asarray(data_16bit))
+    
+    
+    
+    
+    
     data_hilbert = hilbert(data_16bit)
     
+    data_16bit = rs.resample(48000, 4800, data_16bit) #best so far 48000,4800
     
     
-    data_hilbert = rs.resample(48000, 4800, data_hilbert)
-    #data_hilbert = signal.resample_poly(data_16bit, 1,10) # 10 looks decent
+    
+    data_hilbert = movingaverage(data_hilbert,20)
+    
+    #filter_config = scipy.signal.butter(2,4800/4,fs=4800,output='sos')
+    #data_hilbert = signal.sosfilt(filter_config,np.asarray(data_hilbert))
+    
+    
     
     
     
 
     plt.figure(2)
     #plt.plot(t,data_16bit,t[:len(data_hilbert)],data_hilbert) 
+    ##plt.plot(t[:len(data_hilbert)],data_hilbert)
     plt.plot(t[:len(data_hilbert)],data_hilbert)
     
     #plt.show()

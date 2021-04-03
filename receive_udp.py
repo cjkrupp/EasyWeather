@@ -9,6 +9,7 @@ import scipy.signal
 from scipy import signal
 import array
 import resample as rs
+import math
 
 '''
     https://gqrx.dk/doc/streaming-audio-over-udp
@@ -42,7 +43,7 @@ def receive_data_UDP():
     f = open("radio-capture.dat", "rb")
     
     '''
-    time_end = time.time() + 60*1
+    time_end = time.time() + 60*2.9
     while time.time() < time_end:
     #while data_times >= 0:
         data_temp, addr = sock.recvfrom(1024) # buffer size of 1024 bytes
@@ -132,12 +133,41 @@ def receive_data_UDP():
     
     
     
-    data_hilbert = movingaverage(data_hilbert,20)
+    #data_hilbert = movingaverage(data_hilbert,20)
     
     #filter_config = scipy.signal.butter(2,4800/4,fs=4800,output='sos')
     #data_hilbert = signal.sosfilt(filter_config,np.asarray(data_hilbert))
     
     
+    # select a limited amount of data (585000 elements)
+    print(len(data_16bit[:585284]))
+    data_16bit = data_16bit[:585000]
+    
+    # how much to shift the image by (x and y)
+    i = 2334
+    k = 2080
+    while 1:
+        
+        #          turn a 1d array of data into a 2d array
+        #           |               circular rotate the array
+        #           \/              \/                      round down
+        data_tmp = (np.reshape( np.roll(   data_16bit[:math.floor(585000/int(650+0))*int(650+0)],    (2334,2334*2) ),   (int(650+0),-1))   )
+        #data_tmp = data_tmp[::][1::3]
+     
+        
+        reshaped = np.asarray(data_tmp)
+        plt.cla()
+        plt.imshow(reshaped,cmap='gray', vmin = -200, vmax = 4000)
+        print("shape: "+str(k)+' '+str(i))
+        plt.draw()  
+        plt.show(block=False)
+        
+        # increment for searching the image for the actual image rotation
+        i = i + 1
+        k = k+1
+        
+        # pause
+        input()
     
     
     
@@ -177,6 +207,8 @@ def receive_data_UDP():
     #plt.savefig('FFT.png')
     
     print("[receive_udp] Data saved to radio-capture.dat, input.png, demod.png, FFT.png")
+    
+    
     
     return data_16bit
 

@@ -10,7 +10,8 @@ from scipy import signal
 import array
 import resample as rs
 import math
-
+import pandas as pd
+from scipy.io import wavfile
 '''
     https://gqrx.dk/doc/streaming-audio-over-udp
     
@@ -40,8 +41,8 @@ def receive_data_UDP():
 
     data_times = 1024
 
-    f = open("radio-capture.dat", "rb")
-    
+    #f = open("radio-capture.dat", "rb")
+    samplerate, data = wavfile.read('argentina.wav')
     '''
     time_end = time.time() + 60*2.9
     while time.time() < time_end:
@@ -52,6 +53,7 @@ def receive_data_UDP():
         #print("Received data: %s" % data)
     
     f.write(data)
+    '''
     '''
     data = f.read()
     
@@ -66,7 +68,7 @@ def receive_data_UDP():
     # Do the same as above for t
     del t[len(t)-1:]
 
-
+    
     #print(len(data))
     #print('='+str(len(data))+'h')
 
@@ -74,6 +76,9 @@ def receive_data_UDP():
     data_16bit = array.array('h', data)
     # Because data comes in in reverse order, swap the bytes two by two for each word
     data_16bit.byteswap()
+    '''
+    data_16bit = data #[:,1]
+    print(data)
     
     #data_16bit = rs.resample(1800000, 20800, data_16bit)
     
@@ -86,10 +91,12 @@ def receive_data_UDP():
     #data_16bit = signal.resample(data_16bit, 28000)
     
     #f.write(data_16bit)
-    f.close()
+    #f.close()
 
     #print(list(data_16bit))
-    # plotting the data
+    
+    
+    #Un-Demodulated raw data
     plt.figure(1)
     plt.plot(t,data_16bit) 
     
@@ -120,16 +127,16 @@ def receive_data_UDP():
     #freq, h = signal.freqz(b, a, fs=48000)
     #data_16bit = np.convolve(data_16bit,h,'same').real
     
-    filter_config = scipy.signal.butter(2,2400,btype='lowpass',fs=48000,output='sos')
+    filter_config = scipy.signal.butter(2,2400,btype='lowpass',fs=samplerate,output='sos')
     data_16bit = signal.sosfilt(filter_config,np.asarray(data_16bit))
     
     
     
     
-    
+    #data_hilbert = data_16bit
     data_hilbert = hilbert(data_16bit)
     
-    data_16bit = rs.resample(48000, 4800, data_16bit) #best so far 48000,4800
+    #data_16bit = rs.resample(48000, 4800, data_16bit) #best so far 48000,4800
     
     
     
@@ -138,7 +145,7 @@ def receive_data_UDP():
     #filter_config = scipy.signal.butter(2,4800/4,fs=4800,output='sos')
     #data_hilbert = signal.sosfilt(filter_config,np.asarray(data_hilbert))
     
-    
+    '''
     # select a limited amount of data (585000 elements)
     print(len(data_16bit[:585284]))
     data_16bit = data_16bit[:585000]
@@ -151,11 +158,11 @@ def receive_data_UDP():
         #          turn a 1d array of data into a 2d array
         #           |               circular rotate the array
         #           \/              \/                      round down
-        data_tmp = (np.reshape( np.roll(   data_16bit[:math.floor(585000/int(650+0))*int(650+0)],    (2334,2334*2) ),   (int(650+0),-1))   )
-        #data_tmp = data_tmp[::][1::3]
-     
+        data_tmp = (np.reshape( np.roll(   data_16bit[:math.floor(585000/int(650+0))*int(650+0)],    (0,i) ),   (int(650+0),-1))   )
+        
         
         reshaped = np.asarray(data_tmp)
+        plt.figure(1)
         plt.cla()
         plt.imshow(reshaped,cmap='gray', vmin = -200, vmax = 4000)
         print("shape: "+str(k)+' '+str(i))
@@ -163,27 +170,28 @@ def receive_data_UDP():
         plt.show(block=False)
         
         # increment for searching the image for the actual image rotation
-        i = i + 1
+        i = i + 100
         k = k+1
         
         # pause
         input()
     
+    '''
     
-    
-
+    #Demodulated (Hilbert)
     plt.figure(2)
     #plt.plot(t,data_16bit,t[:len(data_hilbert)],data_hilbert) 
-    ##plt.plot(t[:len(data_hilbert)],data_hilbert)
+    #plt.plot(t[:len(data_hilbert)],data_hilbert)
     plt.plot(t[:len(data_hilbert)],data_hilbert)
-    
+    plt.draw()  
+    plt.show(block=False)
     #plt.show()
     #fig = plt.gcf()
     #fig.set_size_inches(15,10)
     #plt.savefig('demod.png')
 
 
-    time_step = 1/48000
+    time_step = 1/samplerate#1/48000
 
     #total_data = (np.sin(2 * np.pi*1600*time_vec))
     # The FFT of the signal
@@ -194,21 +202,27 @@ def receive_data_UDP():
     # The corresponding frequencies
     sample_freq = fftpack.fftfreq(len(data_16bit), d=time_step)
 
+
     # Plot the FFT power
-    #plt.figure(figsize=(6, 5))
     plt.figure(3)
     plt.plot(sample_freq, power)
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('plower')
-    
-    plt.show()
+    plt.draw()  
+    plt.show(block=False)
+    #plt.show()
     #fig = plt.gcf()
     #fig.set_size_inches(15,10)
     #plt.savefig('FFT.png')
     
     print("[receive_udp] Data saved to radio-capture.dat, input.png, demod.png, FFT.png")
     
-    
+    #Derivative
+    data_hilbert = pd.Series(data_hilbert).diff()
+    data_hilbert = data_hilbert.values.tolist()
+    plt.figure(4)
+    plt.plot(t[:len(data_hilbert)],data_hilbert)
+    plt.show()
     
     return data_16bit
 

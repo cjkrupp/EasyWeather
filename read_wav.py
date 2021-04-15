@@ -22,7 +22,7 @@ def read_wav(filename):
     if len(t) != 1:
         print("read_wav(): Successfully read wav file")
   
-    
+    #[:,1]
     return t,data,samplerate
 
 

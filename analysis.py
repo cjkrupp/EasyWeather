@@ -51,10 +51,16 @@ def movingaverage (values, window):
     weights = np.repeat(1.0, window)/window
     sma = np.convolve(values, weights, 'valid')
     return sma
-    
+
+def detect_AB(data_original,one_peak,samplerate):
+
+    return 'A' or 'B'
+
 def analysis(t,data_original,samplerate):
     
     print("analysis(): Starting analysis..")
+    
+    #data_original = rs.resample(11025, 4801, data_original)
     
     # Apply Butterworth filter with center Frequency 2400 Hz
     filter_config = scipy.signal.butter(2,2400,btype='lowpass',fs=samplerate,output='sos')
@@ -105,11 +111,55 @@ def analysis(t,data_original,samplerate):
     #Derivative
     data_hilbert_deriv = pd.Series(data_hilbert).diff()
     peaks, _ = scipy.signal.find_peaks(data_hilbert_deriv, distance=2080,prominence=.2)
+    #peaks, _ = scipy.signal.find_peaks(data_hilbert_deriv, distance=100,prominence=.9)
+    
+    new_peaks = []
+    check_start = 0
+    check_count = 0
+    for i in range(len(peaks)-1):
+        if ((peaks[i+1] - peaks[i]) > 2500) and ((peaks[i+1] - peaks[i]) < 2900):
+            check_start = i
+            check_count = check_count + 1
+        else:
+            check_start = 0
+            check_count = 0
+        if check_count > 20:
+            new_peaks.append(peaks[check_start])
+            print(new_peaks)
+            #break;
+    
+    
     plt.figure(4)
     plt.title("First Derivative of Demodulated Signal")
     #plt.plot(t[:len(data_hilbert_deriv)],data_hilbert_deriv,t[:len(data_hilbert_deriv)],data_hilbert_deriv[peaks], "x")
     plt.plot(data_hilbert_deriv)
     plt.plot(peaks,data_hilbert_deriv[peaks], "x")
+    
+    plt.draw()  
+    plt.show(block=False)
+    
+    plt.figure(5)
+    plt.title("Orig Signal With Peak Detection")
+    plt.plot(data_hilbert)
+    plt.plot(new_peaks,data_hilbert[new_peaks], "bo")
+    plt.draw()  
+    plt.show(block=False)
+    
+    input()
+    
+    plt.figure(6)    
+    width = 5512 #sample rate*0.5   #int(abs(new_peaks[0]-new_peaks[1]))
+    
+    #width = math.floor(int(abs(new_peaks[0]-new_peaks[1])*2))
+    print(width)
+    data_hilbert = data_hilbert[:math.floor(len(data_hilbert)/width)*width]
+    #data_hilbert = (np.reshape( np.roll(   data_hilbert, new_peaks[0]),   (-1,width))   )
+    data_hilbert = (np.reshape(   data_hilbert,   (-1,width))   )
+    reshaped = np.asarray(data_hilbert)
+    
+    plt.cla()
+    plt.imshow(reshaped,cmap='gray', vmin = -200, vmax = 4000)
+    plt.draw()  
     plt.show()
     
     '''
@@ -125,6 +175,6 @@ def analysis(t,data_original,samplerate):
     data_hilbert_deriv = inverse
     '''
  
-    return data
+    return data_hilbert
 
 

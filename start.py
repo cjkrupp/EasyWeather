@@ -2,6 +2,7 @@ import platform
 import receive_udp
 import analysis
 import read_wav
+import read_raw
 
 '''
 This file is where execution always starts. It will determine where to get
@@ -23,5 +24,6 @@ if (platform.system() == "Linux"):
 print("Starting EasyWeather..")
 #data = receive_udp.receive_data_UDP(100,'test')
 t,data,samplerate = read_wav.read_wav('argentina.wav')
+#t,data,samplerate = read_raw.read_raw('radio-capture.dat')
 
 analysis.analysis(t,data,samplerate)

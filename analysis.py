@@ -116,8 +116,9 @@ def analysis(t,data_original,samplerate):
     new_peaks = []
     check_start = 0
     check_count = 0
+    sample_width = int(math.floor(samplerate/4))
     for i in range(len(peaks)-1):
-        if ((peaks[i+1] - peaks[i]) > 2500) and ((peaks[i+1] - peaks[i]) < 2900):
+        if ((peaks[i+1] - peaks[i]) > (sample_width-200)) and ((peaks[i+1] - peaks[i]) < (sample_width+200)):
             check_start = i
             check_count = check_count + 1
         else:
@@ -125,7 +126,7 @@ def analysis(t,data_original,samplerate):
             check_count = 0
         if check_count > 20:
             new_peaks.append(peaks[check_start])
-            print(new_peaks)
+            print("peak location: "+str(new_peaks))
             #break;
     
     
@@ -158,7 +159,7 @@ def analysis(t,data_original,samplerate):
     reshaped = np.asarray(data_hilbert)
     
     plt.cla()
-    plt.imshow(reshaped,cmap='gray', vmin = -200, vmax = 4000)
+    plt.imshow(reshaped,cmap='gray', vmin = -200, vmax = 5000)
     plt.draw()  
     plt.show()
     

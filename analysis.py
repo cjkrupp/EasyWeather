@@ -145,7 +145,7 @@ def analysis(t,data_original,samplerate):
     plt.draw()  
     plt.show(block=False)
     
-    input()
+    #input()
     
     plt.figure(6)    
     width = 5512 #sample rate*0.5   #int(abs(new_peaks[0]-new_peaks[1]))

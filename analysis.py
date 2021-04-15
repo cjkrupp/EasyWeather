@@ -112,7 +112,7 @@ def analysis(t,data_original,samplerate):
     plt.plot(peaks,data_hilbert_deriv[peaks], "x")
     plt.show()
     
-        '''
+    '''
     inverse = np.subtract(np.amax(data_hilbert),data_hilbert)
     data_hilbert_deriv_corrected = np.multiply(inverse,data_hilbert)
     inverse = np.subtract(np.amax(data_hilbert_deriv_corrected),data_hilbert_deriv_corrected)

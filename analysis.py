@@ -190,22 +190,23 @@ def analysis(t,data_original,samplerate):
     
     #width = 5512 #sample rate*0.5   #int(abs(new_peaks[0]-new_peaks[1]))
     #width = 2334 #int(math.floor(samplerate*.5))
+    #.125 for wav
     width = int(math.floor(samplerate*.5))
     
     #width = math.floor(int(abs(new_peaks[0]-new_peaks[1])*2))
     print(width)
     data_hilbert = data_hilbert[:math.floor(len(data_hilbert)/width)*width]
     #data_hilbert = (np.reshape( np.roll(   data_hilbert, new_peaks[0]),   (-1,width))   )
-    ##data_hilbert = np.roll(np.reshape(data_hilbert,(-1,width)), (0,-new_peaks[0]))
+    data_hilbert = np.roll(np.reshape(data_hilbert,(-1,width)), (0,-new_peaks[0]))
     
     #data_hilbert = (np.reshape( np.roll(   data_hilbert, new_peaks[1]),   (width,-1))   )
-    data_hilbert = (np.reshape(   data_hilbert,   (-1,width))   )
+    #data_hilbert = (np.reshape(   data_hilbert,   (-1,width))   )
     #data_hilbert = (np.reshape(   data_hilbert,   (width,-1))   )
     reshaped = np.asarray(data_hilbert)
     
     plt.cla()
-    plt.imshow(reshaped,cmap='gray', vmin = np.amin(data_hilbert), vmax = np.mean(data_hilbert)*1.5)
-    #plt.imshow(reshaped,cmap='gray', vmin = 60000000, vmax = 680000000)
+    #plt.imshow(reshaped,cmap='gray', vmin = np.amin(data_hilbert)*.01, vmax = np.mean(data_hilbert)*2)
+    plt.imshow(reshaped,cmap='gray', vmin = np.mean(data_hilbert)*.9, vmax = np.mean(data_hilbert)*1.2)
     plt.draw()  
     plt.show()
     

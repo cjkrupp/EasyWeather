@@ -15,7 +15,7 @@ from scipy.io import wavfile
 
 def read_raw(filename):
     
-    data_16bit = np.fromfile(filename, dtype=np.dtype('>i4') )
+    data_16bit = np.fromfile(filename, dtype=np.dtype('<i4') )
 
     
     # Create a new t to match our array of words (shortened to half the size in bytes)

@@ -199,6 +199,7 @@ def analysis(t,data_original,samplerate):
     #data_hilbert = (np.reshape( np.roll(   data_hilbert, new_peaks[0]),   (-1,width))   )
     data_hilbert = np.roll(np.reshape(data_hilbert,(-1,width)), (0,-new_peaks[0]))
     
+    
     #data_hilbert = (np.reshape( np.roll(   data_hilbert, new_peaks[1]),   (width,-1))   )
     #data_hilbert = (np.reshape(   data_hilbert,   (-1,width))   )
     #data_hilbert = (np.reshape(   data_hilbert,   (width,-1))   )

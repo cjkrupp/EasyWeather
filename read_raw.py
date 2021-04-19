@@ -24,6 +24,6 @@ def read_raw(filename):
         print("read_wav(): Successfully read wav file")
   
     #[:,1]
-    return t,data_16bit,18000
+    return t,data_16bit,48000
 
 

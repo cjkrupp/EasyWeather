@@ -22,9 +22,10 @@ if (platform.system() == "Linux"):
 
 #val = input("Enter which satellite to capture: ") 
 print("Starting EasyWeather..")
-#t,data,samplerate = receive_udp.receive_data_UDP(60*5,'test')
+t,data,samplerate = receive_udp.receive_data_UDP(60*20,'test')
 #t,data,samplerate = read_wav.read_wav('argentina.wav')
-#t,data,samplerate = read_wav.read_wav('gqrx_20210416_060338_24525000.wav')
-t,data,samplerate = read_raw.read_raw('radio_capture8.dat')
+#t,data,samplerate = read_wav.read_wav('19mar21.wav')
+#t,data,samplerate = read_raw.read_raw('radio_capture8.dat')
+#t,data,samplerate = read_raw.read_raw('radio-capture.dat')
 
 analysis.analysis(t,data,samplerate)

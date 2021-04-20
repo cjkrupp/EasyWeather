@@ -49,6 +49,9 @@ def receive_data_UDP(capture_time,filename):
         i += 1
 
     f = open("radio_capture%s.dat" % i, "ab")
+    settings = open("settings.csv", "w")
+    settings.write("radio_capture%s.dat" % i)
+    settings.close()
     
     time_end = time.time() + capture_time
     #while time.time() < time_end:
@@ -56,7 +59,7 @@ def receive_data_UDP(capture_time,filename):
     while 1:
         
               
-            data_temp, addr = sock.recvfrom(1024) # buffer size of 1024 bytes
+            data_temp, addr = sock.recvfrom(1024*1024) # buffer size of 1024 bytes
             if not data_temp:
                 break
             #data = data + data_temp

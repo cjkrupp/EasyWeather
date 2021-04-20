@@ -50,14 +50,21 @@ def movingaverage (values, window):
     sma = np.convolve(values, weights, 'valid')
     return sma
 
-if 1==1:
-#while 1:
+#if 1==1:
+while 1:
     #val = input("Enter which satellite to capture: ") 
     print("Starting EasyWeather..")
     #t,data,samplerate = receive_udp.receive_data_UDP(60*5,'test')
     #t,data,samplerate = read_wav.read_wav('argentina.wav')
     #t,data,samplerate = read_wav.read_wav('19mar21.wav')
-    t,data_original,samplerate = read_raw.read_raw('radio_capture4.dat')
+    #t,data_original,samplerate = read_raw.read_raw('radio_capture6.dat')
+    
+    settings = open("settings.csv", "r")
+    filename = settings.read()
+    settings.close()
+    print("Reading file: " + str(filename))
+    
+    t,data_original,samplerate = read_raw.read_raw(str(filename))
     #t,data,samplerate = read_raw.read_raw('radio-capture.dat')
     #samplerate = 1800000
     #analysis.analysis(t,data,samplerate)
@@ -74,7 +81,8 @@ if 1==1:
         
     print("analysis(): Starting analysis..")
 
-    #data_original = rs.resample(48000, 4800, data_original)
+    #data_original = rs.resample(48000, 12000, data_original)
+    #samplerate = 12000
     #t = list(range(len(data_original)))
 
     # Apply Butterworth filter with center Frequency 2400 Hz
@@ -110,8 +118,11 @@ if 1==1:
             check_count = 0
         if check_count > 20:
             new_peaks.append(peaks[check_start])
-            print("peak location: "+str(new_peaks))
+            
+            #print("peak location: "+str(new_peaks))
             #break;
+    if (check_count > 20):
+        print("Found image headers..")
 
     if len(new_peaks) == 0:
         new_peaks.append(0)
@@ -122,7 +133,7 @@ if 1==1:
     #width = 5512 #sample rate*0.5   #int(abs(new_peaks[0]-new_peaks[1]))
     #width = 2334 #int(math.floor(samplerate*.5))
     #.125 for wav
-    width = 4000 #int(math.floor(samplerate/11.9))
+    width = 4000 #int(math.floor(samplerate/4)) #4000 works for 48k
 
     #width = math.floor(int(abs(new_peaks[0]-new_peaks[1])*2))
     #print(width)
@@ -138,8 +149,8 @@ if 1==1:
 
     plt.cla()
     #plt.imshow(reshaped,cmap='gray', vmin = np.amin(data_hilbert)*.01, vmax = np.mean(data_hilbert)*2)
-    plt.imshow(reshaped,cmap='gray', vmin = np.mean(data_hilbert)*.8, vmax = np.mean(data_hilbert)*1.3)
+    plt.imshow(reshaped,cmap='gray', vmin = np.mean(data_hilbert)*.7, vmax = np.mean(data_hilbert)*1.4)
     plt.draw()  
-    plt.show()
-    #plt.show(block=False)
-    #plt.pause(0.05)
+    #plt.show()
+    plt.show(block=False)
+    plt.pause(2)

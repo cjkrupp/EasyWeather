@@ -23,6 +23,6 @@ def read_wav(filename):
         print("read_wav(): Successfully read wav file")
   
     #[:,1]
-    return t,data[:,1],samplerate
+    return t,data,samplerate
 
 

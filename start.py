@@ -4,28 +4,44 @@ import analysis
 import read_wav
 import read_raw
 
-'''
-This file is where execution always starts. It will determine where to get
-data from and what OS is running.
 
-'''
+platform_path = ""
 
-
-platform_linux = 1
-running_platform = 0
-
-'''
-if (platform.system() == "Linux"):
-    running_platform = 1
-    print("It looks like you are running Linux, starting rtl_sdr capture.")
-'''
-
-#val = input("Enter which satellite to capture: ") 
 print("Starting EasyWeather..")
-t,data,samplerate = receive_udp.receive_data_UDP(60*20,'test')
-#t,data,samplerate = read_wav.read_wav('argentina.wav')
-#t,data,samplerate = read_wav.read_wav('19mar21.wav')
-#t,data,samplerate = read_raw.read_raw('radio_capture8.dat')
-#t,data,samplerate = read_raw.read_raw('radio-capture.dat')
+if (platform.system() == "Linux"):
+    print("It looks like you are running Linux.")
+    platform_path = "rtl_sdr"
+    
+if (platform.system() == "Windows"):
+    print("It looks like you are running Windows.")
+    platform_path = "Windows/x64/rtl_sdr.exe"
+    
+if (platform.system() == "Darwin"):
+    print("It looks like you are running MacOS.")
+    platform_path = "Macos/MacOS/rtl_sdr"
+    
 
-analysis.analysis(t,data,samplerate)
+while 1:
+    mode = input("\nSelect one of the following modes of operation:\n1. Read data from GQRX / UDP\n2. Read Wav File\n3. Read Raw Data File\n\nEnter a number: \n")
+    if (mode == '1'):
+        print("Starting UDP capture...\nMake sure to start UDP broadcast on GQRX or SDR Sharp @ 127.0.0.1 port 7355\nPress CTRL-C to quit, otherwise start realtime.py to view live data.")
+        t,data,samplerate = receive_udp.receive_data_UDP()
+        break
+    if (mode == '2'):
+        while 1:
+            filename = input("\nStarting wav file analysis...\nEnter wav file name: ")
+            if (len(filename) != 0):
+                t,data,samplerate = read_wav.read_wav(filename)
+                analysis.analysis(t,data,samplerate)
+                break
+        break
+    if (mode == '3'):
+        while 1:
+            filename = input("\nStarting raw file analysis...\nEnter raw file name (.dat): ")
+            if (len(filename) != 0):
+                print("Reading file: " + str(filename))
+                t,data,samplerate = read_raw.read_raw(filename)
+                analysis.analysis(t,data,samplerate)
+                break
+        break
+        

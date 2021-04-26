@@ -21,14 +21,12 @@ import os
     Sample rate: 48 kHz
     Sample format: 16 bit signed, little endian (S16LE)
     
-    
-    
     NOAA 15 - 137.6200 MHz
     NOAA 18 - 137.9125 MHz
     NOAA 19 - 137.1000 MHz
 '''
 #                       (seconds)
-def receive_data_UDP(capture_time,filename):
+def receive_data_UDP():
     # localhost
     UDP_IP = "127.0.0.1"
 
@@ -43,32 +41,25 @@ def receive_data_UDP(capture_time,filename):
 
     data_times = 1024
 
-    #f = open(filename, "wb")
     i = 0
     while os.path.exists("radio_capture%s.dat" % i):
         i += 1
 
+    print("Recording UDP data to file " + str("radio_capture%s.dat" % i))
     f = open("radio_capture%s.dat" % i, "ab")
     settings = open("settings.csv", "w")
     settings.write("radio_capture%s.dat" % i)
     settings.close()
     
-    time_end = time.time() + capture_time
-    #while time.time() < time_end:
-    #while data_times >= 0:
-    while 1:
-        
-              
+
+    while 1:              
             data_temp, addr = sock.recvfrom(1024*1024) # buffer size of 1024 bytes
             if not data_temp:
                 break
             #data = data + data_temp
             f.write(data_temp)
             data_times -= 1
-        #print("Received data: %s" % data)
 
-    
-    
     # generate t from 1 to len(data)
     t = list(range(len(data)))
 
@@ -80,10 +71,6 @@ def receive_data_UDP(capture_time,filename):
     # Do the same as above for t
     del t[len(t)-1:]
 
-    
-    #print(len(data))
-    #print('='+str(len(data))+'h')
-
     # Turn array of bytes into an array of signed words
     data_16bit = array.array('h', data)
     # Because data comes in in reverse order, swap the bytes two by two for each word
@@ -91,12 +78,11 @@ def receive_data_UDP(capture_time,filename):
     
     data_16bit = data #[:,1]
     print(data)
-    
 
     t = list(range(len(data_16bit)))
     
    
     
-    return t,data_16bit,18000
+    return t,data_16bit,48000
 
 

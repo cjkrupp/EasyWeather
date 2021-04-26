@@ -25,11 +25,6 @@ import read_wav
 import read_raw
 import resample
 
-# Returns array of 16 bit values from UDP server
-#data = receive_udp.receive_data_UDP()
-#t,data,samplerate = read_wav.read_wav('argentina.wav')
- 
-
 
 '''
     https://gqrx.dk/doc/streaming-audio-over-udp
@@ -59,6 +54,7 @@ def analysis(t,data_original,samplerate):
     
     new_sample_rate = 12000
     
+    # Resample signal if over 12 kHz
     if (samplerate > new_sample_rate):
         print("Resampled to " + str(new_sample_rate) + " Hz")
         data_resample = rs.resample(samplerate, new_sample_rate, data_original)
@@ -77,10 +73,11 @@ def analysis(t,data_original,samplerate):
     # Apply Hilbert transform to demodulate signal
     data_hilbert = hilbert(data_resample)
 
-    #Derivative
+    # Derivative
     data_hilbert_deriv = pd.Series(data_hilbert).diff()
     peaks, _ = scipy.signal.find_peaks(data_hilbert_deriv, distance=int(math.floor(samplerate*.2)),prominence=.05)
 
+    # Special exception for some sample rates in order to guarantee proper display (namely test images like argentina.wav)
     if (samplerate == 11025):
         width = int(samplerate/2)+1
     else:
@@ -90,6 +87,7 @@ def analysis(t,data_original,samplerate):
     check_start = 0
     check_count = 0
 
+    # Loop through peaks and determine if there are 20 evenly spaced peaks indicating a sync header
     for i in range(len(peaks)-1):
         if ((peaks[i+1] - peaks[i]) > (width*.2)) and ((peaks[i+1] - peaks[i]) < (width*1.8)):
             check_start = i
@@ -110,7 +108,8 @@ def analysis(t,data_original,samplerate):
     plt.figure()
     
     data_hilbert_copy = data_hilbert[:math.floor(len(data_hilbert)/width)*width]
-        
+    
+    # Rotate the array so that the image is aligned to the left so that it is not split down the middle
     data_hilbert_copy = np.roll(np.reshape(data_hilbert_copy,(-1,(width))), (0,-new_peaks[0]))
 
     reshaped = np.asarray(data_hilbert_copy)
@@ -155,7 +154,7 @@ def analysis(t,data_original,samplerate):
         plt.title("FFT of Original Signal")
         plt.plot(sample_freq, power)
         plt.xlabel('Frequency [Hz]')
-        plt.ylabel('plower')
+        plt.ylabel('Amplitude')
         plt.draw()  
         plt.show(block=False)
 
@@ -163,25 +162,7 @@ def analysis(t,data_original,samplerate):
         #Derivative
         data_hilbert_deriv = pd.Series(data_hilbert).diff()
         peaks, _ = scipy.signal.find_peaks(data_hilbert_deriv, distance=int(math.floor(samplerate*.2)),prominence=.05)
-        
-        new_peaks = []
-        check_start = 0
-        check_count = 0
-        sample_width = int(math.floor(samplerate*.5))
-        for i in range(len(peaks)-1):
-            if ((peaks[i+1] - peaks[i]) > (sample_width*.2)) and ((peaks[i+1] - peaks[i]) < (sample_width*1.8)):
-                check_start = i
-                check_count = check_count + 1
-            else:
-                check_start = 0
-                check_count = 0
-            if check_count > 10:
-                new_peaks.append(peaks[check_start])
-            
-        
-        if len(new_peaks) == 0:
-            new_peaks.append(0)
-        
+               
         plt.figure()
         plt.title("First Derivative of Demodulated Signal")
         plt.plot(data_hilbert_deriv)

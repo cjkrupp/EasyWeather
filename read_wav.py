@@ -22,7 +22,10 @@ def read_wav(filename):
     if len(t) != 1:
         print("read_wav(): Successfully read wav file")
   
-    #[:,1]
-    return t,data,samplerate
+    # Check to see if this is a stereo wav or not
+    if (data.ndim) > 1:
+        return t,data[:,1],samplerate
+    else:
+        return t,data,samplerate
 
 

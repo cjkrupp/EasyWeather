@@ -45,7 +45,7 @@ while 1:
     t,data_original,samplerate = read_raw.read_raw(str(filename))
     print("analysis(): Starting analysis..")
     
-    
+    # Resample the input data to 12 kHz
     new_sample_rate = 12000
     print(new_sample_rate)
     data_original = rs.resample(samplerate, new_sample_rate, data_original)
@@ -62,19 +62,18 @@ while 1:
     # Apply Hilbert transform to demodulate signal
     data_hilbert = hilbert(data_original)
 
-    #Derivative
+    # Calculate the derivative, and use it to find the peaks in the data
     data_hilbert_deriv = pd.Series(data_hilbert).diff()
     peaks, _ = scipy.signal.find_peaks(data_hilbert_deriv, distance=int(math.floor(samplerate*.2)),prominence=.05)
-
-    #Argentina
-    #width = int(samplerate/2)+1#-10
         
+    # Calculate the width of the array required to render the image properly when reshaped() and displayed using imshow()
     width = int(samplerate/4)
 
     new_peaks = []
     check_start = 0
     check_count = 0
 
+    # Loop through peaks and determine if there are 20 evenly spaced peaks indicating a sync header
     for i in range(len(peaks)-1):
         if ((peaks[i+1] - peaks[i]) > (width*.2)) and ((peaks[i+1] - peaks[i]) < (width*1.8)):
             check_start = i
@@ -95,7 +94,8 @@ while 1:
     plt.figure(1)
     
     data_hilbert_copy = data_hilbert[:math.floor(len(data_hilbert)/width)*width]
-        
+    
+    # Rotate the array so that the image is aligned to the left so that it is not split down the middle
     data_hilbert_copy = np.roll(np.reshape(data_hilbert_copy,(-1,(width))), (0,-new_peaks[0]))
 
     reshaped = np.asarray(data_hilbert_copy)

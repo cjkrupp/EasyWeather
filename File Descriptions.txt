@@ -1,2 +1,0 @@
-receive_udp.py
-    Used to test importing data from GQRX

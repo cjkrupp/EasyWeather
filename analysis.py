@@ -116,6 +116,8 @@ def analysis(t,data_original,samplerate):
 
     plt.cla()
     plt.imshow(reshaped,cmap='gray', vmin = np.mean(data_hilbert_copy)*.7, vmax = np.mean(data_hilbert_copy)*1.4)
+    plt.ylabel("Pixel Number (row)")
+    plt.xlabel("Pixel Number (column)")
 
     plt.draw()  
     #plt.show()
@@ -133,6 +135,8 @@ def analysis(t,data_original,samplerate):
         #Un-Demodulated Raw Data
         plt.figure()
         plt.title("Original Signal")
+        plt.ylabel("Amplitude (unitless)")
+        plt.xlabel("Sample Number (n)")
         plt.plot(t_orig,data_original) 
         plt.draw()  
         plt.show(block=False)
@@ -140,6 +144,8 @@ def analysis(t,data_original,samplerate):
         #Demodulated (Hilbert)
         plt.figure()
         plt.title("Demodulated (Hilbert) Signal")
+        plt.ylabel("Amplitude (unitless)")
+        plt.xlabel("Sample Number (n)")
         plt.plot(t[:len(data_hilbert)],data_hilbert)
         plt.draw()  
         plt.show(block=False)
@@ -154,7 +160,7 @@ def analysis(t,data_original,samplerate):
         plt.title("FFT of Original Signal")
         plt.plot(sample_freq, power)
         plt.xlabel('Frequency [Hz]')
-        plt.ylabel('Amplitude')
+        plt.ylabel('Amplitude (unitless)')
         plt.draw()  
         plt.show(block=False)
 
@@ -165,6 +171,8 @@ def analysis(t,data_original,samplerate):
                
         plt.figure()
         plt.title("First Derivative of Demodulated Signal")
+        plt.ylabel("Amplitude (unitless)")
+        plt.xlabel("Sample Number (n)")
         plt.plot(data_hilbert_deriv)
         plt.plot(peaks,data_hilbert_deriv[peaks], "x")
         plt.draw()  
@@ -172,6 +180,8 @@ def analysis(t,data_original,samplerate):
         
         plt.figure()
         plt.title("Orig Signal With Peak Detection")
+        plt.ylabel("Amplitude (unitless)")
+        plt.xlabel("Sample Number (n)")
         plt.plot(data_hilbert)
         plt.plot(new_peaks,data_hilbert[new_peaks], "bo")
         plt.draw()  

@@ -8,22 +8,23 @@ from scipy import fftpack
 import scipy.signal
 from scipy import signal
 import array
-import resample as rs
+#import resample as rs
 import math
 import pandas as pd
 from scipy.io import wavfile
 
 import platform
-import receive_udp
-import read_wav
-
-
-import platform
-import receive_udp
-import analysis
-import read_wav
-import read_raw
 import resample
+#import receive_udp
+#import read_wav
+
+
+#import platform
+#import receive_udp
+#import analysis
+#import read_wav
+#import read_raw
+#import resample
 
 
 '''
@@ -57,7 +58,7 @@ def analysis(t,data_original,samplerate):
     # Resample signal if over 12 kHz
     if (samplerate > new_sample_rate):
         print("Resampled to " + str(new_sample_rate) + " Hz")
-        data_resample = rs.resample(samplerate, new_sample_rate, data_original)
+        data_resample = resample.resample(samplerate, new_sample_rate, data_original)
         samplerate = new_sample_rate
         
         # Apply Butterworth filter with center Frequency 2400 Hz

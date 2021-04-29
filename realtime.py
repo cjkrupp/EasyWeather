@@ -8,12 +8,13 @@ from scipy import fftpack
 import scipy.signal
 from scipy import signal
 import array
-import resample as rs
+#import resample as rs
 import math
 import pandas as pd
 from scipy.io import wavfile
 
 import platform
+
 import receive_udp
 import read_wav
 
@@ -23,6 +24,7 @@ import receive_udp
 import analysis
 import read_wav
 import read_raw
+
 import resample
 
 # Hilbert() derived from https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html
@@ -48,7 +50,7 @@ while 1:
     # Resample the input data to 12 kHz
     new_sample_rate = 12000
     print(new_sample_rate)
-    data_original = rs.resample(samplerate, new_sample_rate, data_original)
+    data_original = resample.resample(samplerate, new_sample_rate, data_original)
     samplerate = new_sample_rate
     t = list(range(len(data_original)))
     

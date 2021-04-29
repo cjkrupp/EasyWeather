@@ -8,7 +8,7 @@ from scipy import fftpack
 import scipy.signal
 from scipy import signal
 import array
-import resample as rs
+#import resample as rs
 import math
 import pandas as pd
 from scipy.io import wavfile
